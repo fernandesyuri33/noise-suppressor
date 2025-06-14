@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include "../include/mac/MacPermissions.h"
 
 MainComponent::MainComponent()
     : deviceSelector(deviceManager, 1, 2, 1, 2, false, false, true, false)
@@ -129,6 +130,7 @@ void MainComponent::saveSettings()
 
 void MainComponent::openAudioWithXml(const juce::String& xmlState)
 {
+    MacPermissions::requestMicrophoneAccessIfNeeded();
     auto open = [this, xmlState]
     {
         std::unique_ptr<juce::XmlElement> xml;
