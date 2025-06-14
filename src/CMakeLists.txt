@@ -27,3 +27,9 @@ target_link_libraries(NoiseSuppressor PRIVATE
     juce::juce_gui_extra
     juce::juce_audio_utils
 )
+
+if(APPLE)
+    target_link_libraries(NoiseSuppressor PRIVATE
+        "-framework AVFoundation"
+    )
+endif()
