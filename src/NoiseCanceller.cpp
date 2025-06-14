@@ -52,11 +52,11 @@ void NoiseCanceller::process(juce::AudioBuffer<float>& buffer, int startSample, 
             for (size_t k = 0; k < filterLength; ++k)
                 y += w[k] * h[k];
 
-            float error = (-x) - y;
+            float error = x - y; // residual signal after cancelling prediction
             for (size_t k = 0; k < filterLength; ++k)
                 w[k] += stepSize * error * h[k];
 
-            data[n] = y;
+            data[n] = error; // output the noise-reduced signal
         }
     }
 }
