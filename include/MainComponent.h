@@ -26,6 +26,7 @@ private:
     void stopAudio();
     void loadSettings();
     void saveSettings();
+    void openAudioWithXml(const juce::String& xmlState);
     juce::AudioDeviceSelectorComponent deviceSelector;
     NoiseCanceller noiseCanceller;
     juce::TextButton startButton { "Start" };

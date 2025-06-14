@@ -80,18 +80,11 @@ void MainComponent::startAudio()
     if (audioRunning)
         return;
 
-    std::unique_ptr<juce::XmlElement> xml;
+    juce::String xmlStr;
     if (properties != nullptr)
-    {
-        auto xmlStr = properties->getValue("deviceState");
-        if (xmlStr.isNotEmpty())
-            xml = juce::XmlDocument::parse(xmlStr);
-    }
+        xmlStr = properties->getValue("deviceState");
 
-    setAudioChannels(2, 2, xml.get());
-    audioRunning = true;
-    startButton.setEnabled(false);
-    stopButton.setEnabled(true);
+    openAudioWithXml(xmlStr);
 }
 
 void MainComponent::stopAudio()
@@ -107,23 +100,17 @@ void MainComponent::stopAudio()
 
 void MainComponent::loadSettings()
 {
-    std::unique_ptr<juce::XmlElement> xml;
+    juce::String xmlStr;
     bool enabled = true;
 
     if (properties != nullptr)
     {
-        auto xmlStr = properties->getValue("deviceState");
-        if (xmlStr.isNotEmpty())
-            xml = juce::XmlDocument::parse(xmlStr);
-
+        xmlStr = properties->getValue("deviceState");
         enabled = properties->getBoolValue("noiseEnabled", true);
     }
 
-    setAudioChannels(2, 2, xml.get());
-    audioRunning = true;
+    openAudioWithXml(xmlStr);
 
-    startButton.setEnabled(false);
-    stopButton.setEnabled(true);
     enableToggle.setToggleState(enabled, juce::dontSendNotification);
     setNoiseCancellationEnabled(enabled);
 }
@@ -137,6 +124,32 @@ void MainComponent::saveSettings()
 
         properties->setValue("noiseEnabled", enableToggle.getToggleState());
         properties->saveIfNeeded();
+    }
+}
+
+void MainComponent::openAudioWithXml(const juce::String& xmlState)
+{
+    auto open = [this, xmlState]
+    {
+        std::unique_ptr<juce::XmlElement> xml;
+        if (xmlState.isNotEmpty())
+            xml = juce::XmlDocument::parse(xmlState);
+
+        setAudioChannels(2, 2, xml.get());
+        audioRunning = true;
+        startButton.setEnabled(false);
+        stopButton.setEnabled(true);
+    };
+
+    if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
+        && !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
+    {
+        juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
+                                          [open](bool granted) { if (granted) open(); });
+    }
+    else
+    {
+        open();
     }
 }
 
