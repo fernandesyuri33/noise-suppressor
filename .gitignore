@@ -37,3 +37,6 @@ cmake-build-*/
 
 # JUCE generated intermediate
 /JuceLibraryCode/
+
+# build
+build
