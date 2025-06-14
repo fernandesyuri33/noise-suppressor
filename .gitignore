@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+# JUCE generated builds
+Builds/
+cmake-build-*/
+*.jucer
+
+# JUCE generated intermediate
+/JuceLibraryCode/
+
+# build
+build
