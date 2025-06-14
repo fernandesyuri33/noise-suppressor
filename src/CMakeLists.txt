@@ -1,10 +1,12 @@
 set(SOURCE_FILES
     Main.cpp
     MainComponent.cpp
+    NoiseCanceller.cpp
 )
 
 set(HEADER_FILES
     ${CMAKE_CURRENT_LIST_DIR}/../include/MainComponent.h
+    ${CMAKE_CURRENT_LIST_DIR}/../include/NoiseCanceller.h
 )
 
 juce_add_gui_app(NoiseSuppressor

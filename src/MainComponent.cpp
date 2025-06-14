@@ -16,22 +16,31 @@ MainComponent::~MainComponent()
     shutdownAudio();
 }
 
-void MainComponent::prepareToPlay(int /*samplesPerBlockExpected*/, double /*sampleRate*/)
+void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-    // nothing to prepare for this simple pass-through example
+    noiseCanceller.prepare(sampleRate, samplesPerBlockExpected);
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    // The buffer provided by AudioSourcePlayer already contains the microphone
-    // input copied into the output channels. Leaving it untouched passes the
-    // audio through without additional latency.
-    juce::ignoreUnused(bufferToFill);
+    // The buffer already contains the microphone input copied to the output
+    // channels. Process the buffer to produce an inverse waveform.
+    noiseCanceller.process(*bufferToFill.buffer, bufferToFill.startSample, bufferToFill.numSamples);
 }
 
 void MainComponent::releaseResources()
 {
     // nothing to release
+}
+
+void MainComponent::setNoiseCancellationEnabled(bool enabled)
+{
+    noiseCanceller.setEnabled(enabled);
+}
+
+bool MainComponent::isNoiseCancellationEnabled() const noexcept
+{
+    return noiseCanceller.isEnabled();
 }
 
 void MainComponent::paint(juce::Graphics& g)
